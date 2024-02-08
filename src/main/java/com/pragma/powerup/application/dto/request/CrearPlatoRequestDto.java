@@ -19,5 +19,4 @@ public class CrearPlatoRequestDto {
     private int precio;
     private int idRestaurante;
     private String urlImagen;
-    private Boolean activo;
 }
