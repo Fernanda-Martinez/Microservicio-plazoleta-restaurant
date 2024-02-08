@@ -1,8 +1,6 @@
 package com.pragma.powerup.infrastructure.out.jpa.mapper;
 
-import com.pragma.powerup.domain.model.ObjectModel;
 import com.pragma.powerup.domain.model.Restaurante;
-import com.pragma.powerup.infrastructure.out.jpa.entity.ObjectEntity;
 import com.pragma.powerup.infrastructure.out.jpa.entity.RestauranteEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
