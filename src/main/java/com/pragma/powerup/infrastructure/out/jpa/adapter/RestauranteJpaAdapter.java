@@ -6,7 +6,7 @@ import com.pragma.powerup.infrastructure.out.jpa.entity.RestauranteEntity;
 import com.pragma.powerup.infrastructure.out.jpa.mapper.IRestauranteEntityMapper;
 import com.pragma.powerup.infrastructure.out.jpa.repository.IRestaurantRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+
 
 @RequiredArgsConstructor
 public class RestauranteJpaAdapter implements IRestaurantePersistencePort {

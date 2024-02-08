@@ -4,7 +4,6 @@ import com.pragma.powerup.application.dto.request.CrearRestauranteRequestDto;
 import com.pragma.powerup.application.dto.response.CrearRestauranteResponseDto;
 import com.pragma.powerup.application.handler.IRestauranteHandler;
 import com.pragma.powerup.application.mapper.IRestauranteRequestMapper;
-import com.pragma.powerup.application.mapper.IRestauranteResponseMapper;
 import com.pragma.powerup.domain.api.IRestauranteServicePort;
 import com.pragma.powerup.domain.model.Restaurante;
 import lombok.RequiredArgsConstructor;
