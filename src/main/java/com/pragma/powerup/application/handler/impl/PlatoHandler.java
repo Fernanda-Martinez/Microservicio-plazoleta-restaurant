@@ -26,6 +26,7 @@ public class PlatoHandler implements IPlatoHandler {
         Plato plato = platoRequestMapper.toPlato(platoRequestDto);
         plato.setActivo(true);
 
+
         Plato response = platoServicePort.crear(plato) ;
         return platoResponseMapper.toResponse(response);
     }
