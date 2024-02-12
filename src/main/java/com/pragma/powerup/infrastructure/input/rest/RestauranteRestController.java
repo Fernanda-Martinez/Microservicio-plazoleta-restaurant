@@ -1,6 +1,7 @@
 package com.pragma.powerup.infrastructure.input.rest;
 
 import com.pragma.powerup.application.dto.request.CrearRestauranteRequestDto;
+import com.pragma.powerup.application.dto.response.CrearRestauranteResponseDto;
 import com.pragma.powerup.application.handler.IRestauranteHandler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -27,9 +28,10 @@ public class RestauranteRestController {
             @ApiResponse(responseCode = "409", description = "El restaurante ya existe", content = @Content)
     })
     @PostMapping("/")
-    public ResponseEntity<Void> crear(@RequestBody CrearRestauranteRequestDto restauranteRequestDto) {
-        restauranteHandler.crearRestaurante(restauranteRequestDto);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+    public ResponseEntity<CrearRestauranteResponseDto> crear(@RequestBody CrearRestauranteRequestDto restauranteRequestDto) {
+        CrearRestauranteResponseDto responseDto = restauranteHandler.crearRestaurante(restauranteRequestDto);
+        return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
+
     }
 
 

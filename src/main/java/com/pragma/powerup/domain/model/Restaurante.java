@@ -13,12 +13,12 @@ import lombok.Setter;
 
 public class Restaurante {
 
-    private int id;
-    private String nombre;
-    private String direccion;
-    private int idPropietario;
-    private String telefono;
-    private String urlLogo;
-    private int nit;
+    private int id = 0;
+    private String nombre = "";
+    private String direccion = "";
+    private int idPropietario = 0;
+    private String telefono = "";
+    private String urlLogo = "";
+    private int nit = 0;
 
 }
