@@ -1,11 +1,14 @@
 package com.pragma.powerup.infrastructure.configuration;
 
+import com.pragma.powerup.domain.api.ICambiarEstadoPlatoServicePort;
 import com.pragma.powerup.domain.api.IPlatoModServicePort;
 import com.pragma.powerup.domain.api.IPlatoServicePort;
 import com.pragma.powerup.domain.api.IRestauranteServicePort;
+import com.pragma.powerup.domain.spi.ICambiarEstadoPlatoPersistencePort;
 import com.pragma.powerup.domain.spi.IPlatoModPersistencePort;
 import com.pragma.powerup.domain.spi.IPlatoPersistencePort;
 import com.pragma.powerup.domain.spi.IRestaurantePersistencePort;
+import com.pragma.powerup.domain.usecase.CambiarEstadoPlatoUseCase;
 import com.pragma.powerup.domain.usecase.PlatoModificadoUseCase;
 import com.pragma.powerup.domain.usecase.PlatoUseCase;
 import com.pragma.powerup.domain.usecase.RestauranteUseCase;
@@ -62,4 +65,17 @@ public class BeanConfiguration {
 
         return new PlatoModificadoUseCase(platoModPersistencePort());
     }
+
+    //Cambiar estado Plato
+    @Bean
+    public ICambiarEstadoPlatoPersistencePort cambiarEstadoPlatoPersistencePort () {
+        return new PlatoJpaAdapter(platoRepository, platoEntityMapper);
+    }
+
+    @Bean
+    public ICambiarEstadoPlatoServicePort cambiarEstadoPlatoServicePort() {
+        return new CambiarEstadoPlatoUseCase(cambiarEstadoPlatoPersistencePort());
+    }
+
+
 }

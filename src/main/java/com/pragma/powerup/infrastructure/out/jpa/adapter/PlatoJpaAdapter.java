@@ -1,6 +1,7 @@
 package com.pragma.powerup.infrastructure.out.jpa.adapter;
 
 import com.pragma.powerup.domain.model.Plato;
+import com.pragma.powerup.domain.spi.ICambiarEstadoPlatoPersistencePort;
 import com.pragma.powerup.domain.spi.IPlatoModPersistencePort;
 import com.pragma.powerup.domain.spi.IPlatoPersistencePort;
 import com.pragma.powerup.infrastructure.out.jpa.entity.PlatoEntity;
@@ -11,10 +12,11 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 
-public class PlatoJpaAdapter implements IPlatoPersistencePort, IPlatoModPersistencePort {
+public class PlatoJpaAdapter implements IPlatoPersistencePort, IPlatoModPersistencePort, ICambiarEstadoPlatoPersistencePort {
 
     private final IPlatoRepository platoRepository;
     private final IPlatoEntityMapper platoEntityMapper;
+
 
 
     @Override
@@ -33,5 +35,14 @@ public class PlatoJpaAdapter implements IPlatoPersistencePort, IPlatoModPersiste
        PlatoEntity response = platoRepository.save(platoAMod);
        return platoEntityMapper.toPlatoModel(response);
 
+    }
+
+
+    @Override
+    public Plato cambiarEstado(int id) {
+        PlatoEntity platoEstado = platoRepository.findById(id).orElseThrow(() -> new RuntimeException("Plato no encontrado con el id: " + id));
+        platoEstado.setActivo(!platoEstado.getActivo());
+        PlatoEntity response = platoRepository.save(platoEstado);
+        return platoEntityMapper.toPlatoModel(response);
     }
 }
