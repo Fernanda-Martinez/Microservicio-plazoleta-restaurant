@@ -37,6 +37,7 @@ public class PlatoJpaAdapter implements IPlatoPersistencePort, IPlatoModPersiste
 
     }
 
+
     @Override
     public Plato cambiarEstado(int id) {
         PlatoEntity platoEstado = platoRepository.findById(id).orElseThrow(() -> new RuntimeException("Plato no encontrado con el id: " + id));
