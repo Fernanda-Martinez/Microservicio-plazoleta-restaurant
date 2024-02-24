@@ -80,5 +80,17 @@ public class BeanConfiguration {
         return new ListarRestauranteUseCase(listarRestaurantePersistencePort());
     }
 
+    //Listar platos
+
+    @Bean
+    public IListarPlatoPersistencePort listarPlatoPersistencePort(){
+        return new PlatoJpaAdapter(platoRepository, platoEntityMapper);
+    }
+
+    @Bean
+    public IListarPlatoServicePort listarPlatoServicePort(){
+        return new ListarPlatoUseCase(listarPlatoPersistencePort());
+    }
+
 
 }

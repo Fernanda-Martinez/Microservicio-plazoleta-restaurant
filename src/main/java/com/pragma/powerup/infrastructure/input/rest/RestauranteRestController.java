@@ -41,8 +41,8 @@ public class RestauranteRestController {
     //listar restaurante
     @Operation(summary = "Listar los restaurantes ")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Restaurante creado", content = @Content),
-            @ApiResponse(responseCode = "409", description = "El restaurante ya existe", content = @Content)
+            @ApiResponse(responseCode = "201", description = "Restaurantes listados", content = @Content),
+            @ApiResponse(responseCode = "409", description = "No hay restaurantes disponibles", content = @Content)
     })
     @GetMapping("/listar")
     public ResponseEntity<Page<ListarRestauranteResponseDto>> listarRestaurante(@RequestParam(defaultValue = "0") int pageNumber, @RequestParam(defaultValue = "10") int pageSize){
