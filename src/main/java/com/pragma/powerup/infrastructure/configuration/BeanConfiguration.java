@@ -1,17 +1,8 @@
 package com.pragma.powerup.infrastructure.configuration;
 
-import com.pragma.powerup.domain.api.ICambiarEstadoPlatoServicePort;
-import com.pragma.powerup.domain.api.IPlatoModServicePort;
-import com.pragma.powerup.domain.api.IPlatoServicePort;
-import com.pragma.powerup.domain.api.IRestauranteServicePort;
-import com.pragma.powerup.domain.spi.ICambiarEstadoPlatoPersistencePort;
-import com.pragma.powerup.domain.spi.IPlatoModPersistencePort;
-import com.pragma.powerup.domain.spi.IPlatoPersistencePort;
-import com.pragma.powerup.domain.spi.IRestaurantePersistencePort;
-import com.pragma.powerup.domain.usecase.CambiarEstadoPlatoUseCase;
-import com.pragma.powerup.domain.usecase.PlatoModificadoUseCase;
-import com.pragma.powerup.domain.usecase.PlatoUseCase;
-import com.pragma.powerup.domain.usecase.RestauranteUseCase;
+import com.pragma.powerup.domain.api.*;
+import com.pragma.powerup.domain.spi.*;
+import com.pragma.powerup.domain.usecase.*;
 import com.pragma.powerup.infrastructure.out.jpa.adapter.RestauranteJpaAdapter;
 import com.pragma.powerup.infrastructure.out.jpa.mapper.IPlatoEntityMapper;
 import com.pragma.powerup.infrastructure.out.jpa.mapper.IRestauranteEntityMapper;
@@ -75,6 +66,18 @@ public class BeanConfiguration {
     @Bean
     public ICambiarEstadoPlatoServicePort cambiarEstadoPlatoServicePort() {
         return new CambiarEstadoPlatoUseCase(cambiarEstadoPlatoPersistencePort());
+    }
+
+    //Listar restaurantes
+
+    @Bean
+    public IListarRestaurantePersistencePort listarRestaurantePersistencePort(){
+        return new RestauranteJpaAdapter(restaurantRepository, restauranteEntityMapper);
+    }
+
+    @Bean
+    public IListarRestauranteServicePort listarRestauranteServicePort(){
+        return new ListarRestauranteUseCase(listarRestaurantePersistencePort());
     }
 
 
