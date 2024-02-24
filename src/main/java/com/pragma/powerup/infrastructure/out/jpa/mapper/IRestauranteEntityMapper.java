@@ -5,7 +5,6 @@ import com.pragma.powerup.infrastructure.out.jpa.entity.RestauranteEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 
-import java.util.List;
 
 @Mapper(componentModel = "spring",
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
@@ -14,5 +13,5 @@ import java.util.List;
 public interface IRestauranteEntityMapper {
     RestauranteEntity toEntity(Restaurante restaurante);
     Restaurante toRestauranteModel(RestauranteEntity restauranteEntity);
-    List<Restaurante> toRestauranteModel(List<RestauranteEntity> restauranteEntityList);
+
 }

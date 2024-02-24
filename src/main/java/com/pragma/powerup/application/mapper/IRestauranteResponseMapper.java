@@ -12,5 +12,4 @@ import org.mapstruct.ReportingPolicy;
 public interface IRestauranteResponseMapper {
     CrearRestauranteResponseDto toResponse(Restaurante restaurante);
 
-
 }
