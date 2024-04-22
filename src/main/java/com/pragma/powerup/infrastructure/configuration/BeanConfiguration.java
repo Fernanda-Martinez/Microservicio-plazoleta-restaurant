@@ -3,9 +3,12 @@ package com.pragma.powerup.infrastructure.configuration;
 import com.pragma.powerup.domain.api.*;
 import com.pragma.powerup.domain.spi.*;
 import com.pragma.powerup.domain.usecase.*;
+import com.pragma.powerup.infrastructure.out.jpa.adapter.PedidoJpaAdapter;
 import com.pragma.powerup.infrastructure.out.jpa.adapter.RestauranteJpaAdapter;
 import com.pragma.powerup.infrastructure.out.jpa.mapper.IPlatoEntityMapper;
 import com.pragma.powerup.infrastructure.out.jpa.mapper.IRestauranteEntityMapper;
+import com.pragma.powerup.infrastructure.out.jpa.repository.IPedidoRepository;
+import com.pragma.powerup.infrastructure.out.jpa.repository.IPlatoPedidoRepository;
 import com.pragma.powerup.infrastructure.out.jpa.repository.IPlatoRepository;
 import com.pragma.powerup.infrastructure.out.jpa.repository.IRestaurantRepository;
 import com.pragma.powerup.infrastructure.out.jpa.adapter.PlatoJpaAdapter;
@@ -20,6 +23,8 @@ public class BeanConfiguration {
     private final IRestauranteEntityMapper restauranteEntityMapper;
     private final IPlatoRepository platoRepository;
     private final IPlatoEntityMapper platoEntityMapper;
+    private final IPedidoRepository pedidoRepository;
+    private final IPlatoPedidoRepository platoPedidoRepository;
 
     //Restaurante
     @Bean
@@ -92,5 +97,15 @@ public class BeanConfiguration {
         return new ListarPlatoUseCase(listarPlatoPersistencePort());
     }
 
+    //Realizar Pedido
+    @Bean
+    public IPedidoPersistencePort pedidoPersistencePort(){
+        return new PedidoJpaAdapter(pedidoRepository, platoPedidoRepository);
+    }
+
+    @Bean
+    public IPedidoServicePort pedidoServicePort(){
+        return new PedidoUseCase(pedidoPersistencePort());
+    }
 
 }
