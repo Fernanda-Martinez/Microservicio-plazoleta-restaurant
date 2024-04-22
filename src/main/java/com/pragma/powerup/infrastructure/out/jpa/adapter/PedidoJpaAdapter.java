@@ -2,12 +2,15 @@ package com.pragma.powerup.infrastructure.out.jpa.adapter;
 
 import com.pragma.powerup.application.dto.request.PlatoRequestDto;
 import com.pragma.powerup.domain.model.Pedido;
+import com.pragma.powerup.domain.spi.IListarPedidoPersistencePort;
 import com.pragma.powerup.domain.spi.IPedidoPersistencePort;
 import com.pragma.powerup.infrastructure.out.jpa.entity.PedidoEntity;
 import com.pragma.powerup.infrastructure.out.jpa.entity.PlatoPedidoEntity;
 import com.pragma.powerup.infrastructure.out.jpa.repository.IPedidoRepository;
 import com.pragma.powerup.infrastructure.out.jpa.repository.IPlatoPedidoRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 
 import java.util.ArrayList;
@@ -17,7 +20,7 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 
-public class PedidoJpaAdapter implements IPedidoPersistencePort {
+public class PedidoJpaAdapter implements IPedidoPersistencePort, IListarPedidoPersistencePort {
 
     private final IPedidoRepository pedidoRepository;
     private final IPlatoPedidoRepository platoPedidoRepository;
@@ -81,6 +84,26 @@ public class PedidoJpaAdapter implements IPedidoPersistencePort {
         res.setPlatoRequestDtoList(listRequest);
 
         return res;
+    }
+
+    @Override
+    public Page<Pedido> listarPedidos(int idEmpleado, int idRestaurante, String estado, PageRequest pageRequest){
+        Page<PedidoEntity> pedidos = pedidoRepository.buscarEstadoPedido(pageRequest,estado,idRestaurante);
+        return pedidos.map(this::toPedidoModel);
+    }
+
+    private Pedido toPedidoModel(PedidoEntity entity){
+        List<PlatoRequestDto> list = new ArrayList<>();
+
+        return new Pedido(
+                entity.getId(),
+                entity.getIdCliente(),
+                entity.getIdRestaurante(),
+                entity.getEstado(),
+                entity.getFecha(),
+                entity.getIdChef(),
+                list
+        );
     }
 
 }

@@ -108,4 +108,14 @@ public class BeanConfiguration {
         return new PedidoUseCase(pedidoPersistencePort());
     }
 
+    //ListarPedido
+    @Bean
+    public IListarPedidoPersistencePort listarPedidoPersistencePort(){
+        return new PedidoJpaAdapter(pedidoRepository, platoPedidoRepository);
+    }
+    @Bean
+    public IListarPedidoServicePort listarPedidoServicePort(){
+        return new ListarPedidoUseCase(listarPedidoPersistencePort());
+    }
+
 }
