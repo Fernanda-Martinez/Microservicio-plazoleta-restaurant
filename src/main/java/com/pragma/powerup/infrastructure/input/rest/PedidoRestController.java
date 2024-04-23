@@ -1,8 +1,10 @@
 package com.pragma.powerup.infrastructure.input.rest;
 
 import com.pragma.powerup.application.dto.request.RealizarPedidoRequestDto;
+import com.pragma.powerup.application.dto.response.AsignarPedidoResponseDto;
 import com.pragma.powerup.application.dto.response.ListarPedidoResponseDto;
 import com.pragma.powerup.application.dto.response.RealizarPedidoResponseDto;
+import com.pragma.powerup.application.handler.IAsignarPedidoHandler;
 import com.pragma.powerup.application.handler.IListarPedidoHandler;
 import com.pragma.powerup.application.handler.IPedidoHandler;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 public class PedidoRestController {
     private final IPedidoHandler pedidoHandler;
     private final IListarPedidoHandler listarPedidoHandler;
+    private final IAsignarPedidoHandler asignarPedidoHandler;
 
     @Operation(summary = "Crea un pedido")
     @ApiResponses(value = {
@@ -51,5 +54,15 @@ public class PedidoRestController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @Operation(summary = "Asignarse un pedido")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Pedido asignado", content = @Content),
+            @ApiResponse(responseCode = "409", description = "Asignación de pedido fallida", content = @Content)
+    })
+    @PutMapping("/asignar")
+    public ResponseEntity<AsignarPedidoResponseDto> asignar(@RequestParam(defaultValue = "0") int idEmpleado, @RequestParam(defaultValue = "0") int idPedido){
+        AsignarPedidoResponseDto response = asignarPedidoHandler.asignar(idEmpleado, idPedido);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
 }
