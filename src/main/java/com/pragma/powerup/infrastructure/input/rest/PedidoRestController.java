@@ -2,9 +2,11 @@ package com.pragma.powerup.infrastructure.input.rest;
 
 import com.pragma.powerup.application.dto.request.RealizarPedidoRequestDto;
 import com.pragma.powerup.application.dto.response.AsignarPedidoResponseDto;
+import com.pragma.powerup.application.dto.response.CancelarPedidoResponseDto;
 import com.pragma.powerup.application.dto.response.ListarPedidoResponseDto;
 import com.pragma.powerup.application.dto.response.RealizarPedidoResponseDto;
 import com.pragma.powerup.application.handler.IAsignarPedidoHandler;
+import com.pragma.powerup.application.handler.ICancelarPedidoHandler;
 import com.pragma.powerup.application.handler.IListarPedidoHandler;
 import com.pragma.powerup.application.handler.IPedidoHandler;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,6 +27,7 @@ public class PedidoRestController {
     private final IPedidoHandler pedidoHandler;
     private final IListarPedidoHandler listarPedidoHandler;
     private final IAsignarPedidoHandler asignarPedidoHandler;
+    private final ICancelarPedidoHandler cancelarPedidoHandler;
 
     @Operation(summary = "Crea un pedido")
     @ApiResponses(value = {
@@ -62,6 +65,17 @@ public class PedidoRestController {
     @PutMapping("/asignar")
     public ResponseEntity<AsignarPedidoResponseDto> asignar(@RequestParam(defaultValue = "0") int idEmpleado, @RequestParam(defaultValue = "0") int idPedido){
         AsignarPedidoResponseDto response = asignarPedidoHandler.asignar(idEmpleado, idPedido);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @Operation(summary = "Cancelar un pedido")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Pedido cancelado", content = @Content),
+            @ApiResponse(responseCode = "409", description = "Cancelación de pedido fallida", content = @Content)
+    })
+    @PutMapping("/cancelar")
+    public ResponseEntity<CancelarPedidoResponseDto> cancelar(@RequestParam(defaultValue = "0") int idCliente, @RequestParam(defaultValue = "0") int idPedido){
+        CancelarPedidoResponseDto response = cancelarPedidoHandler.cancelarPedido(idCliente, idPedido);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
