@@ -128,4 +128,13 @@ public class BeanConfiguration {
         return new AsignarPedidoUseCase(asignarPedidoPersistencePort());
     }
 
+    @Bean
+    public ICancelarPedidoPersistencePort cancelarPedidoPersistencePort() {
+        return new PedidoJpaAdapter(pedidoRepository, platoPedidoRepository);
+    }
+    @Bean
+    public ICancelarPedidoServicePort cancelarPedidoServicePort() {
+        return new CancelarPedidoUseCase(cancelarPedidoPersistencePort());
+    }
+
 }

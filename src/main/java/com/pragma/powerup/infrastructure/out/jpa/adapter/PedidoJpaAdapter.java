@@ -3,6 +3,7 @@ package com.pragma.powerup.infrastructure.out.jpa.adapter;
 import com.pragma.powerup.application.dto.request.PlatoRequestDto;
 import com.pragma.powerup.domain.model.Pedido;
 import com.pragma.powerup.domain.spi.IAsignarPedidoPersistencePort;
+import com.pragma.powerup.domain.spi.ICancelarPedidoPersistencePort;
 import com.pragma.powerup.domain.spi.IListarPedidoPersistencePort;
 import com.pragma.powerup.domain.spi.IPedidoPersistencePort;
 import com.pragma.powerup.infrastructure.out.jpa.entity.PedidoEntity;
@@ -22,10 +23,14 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 
-public class PedidoJpaAdapter implements IPedidoPersistencePort, IListarPedidoPersistencePort, IAsignarPedidoPersistencePort {
+public class PedidoJpaAdapter implements IPedidoPersistencePort, IListarPedidoPersistencePort,
+        IAsignarPedidoPersistencePort, ICancelarPedidoPersistencePort {
 
     private final IPedidoRepository pedidoRepository;
     private final IPlatoPedidoRepository platoPedidoRepository;
+    String PENDIENTE_CONST = "Pendiente";
+    String CANCELADO_CONST = "Cancelado";
+    String PREPARACION_CONST = "En Preparación";
 
 
 
@@ -35,13 +40,13 @@ public class PedidoJpaAdapter implements IPedidoPersistencePort, IListarPedidoPe
 
         if (pedidos.stream().anyMatch(item ->
                 item.getIdCliente() == pedidoRegistrado.getIdCliente() &&
-                        "Pendiente".equals(item.getEstado()))) {
+                        PENDIENTE_CONST.equals(item.getEstado()))) {
             return null;
         }
 
 
         PedidoEntity pedido = new PedidoEntity();
-        pedido.setEstado("Pendiente");
+        pedido.setEstado(PENDIENTE_CONST);
         pedido.setFecha(new Date());
         pedido.setIdChef(0);
         pedido.setIdCliente(pedidoRegistrado.getIdCliente());
@@ -118,7 +123,7 @@ public class PedidoJpaAdapter implements IPedidoPersistencePort, IListarPedidoPe
 
         PedidoEntity pedido = pedidoOptional.get();
         pedido.setIdChef(idEmpleado);
-        pedido.setEstado("En Preparacion");
+        pedido.setEstado(PREPARACION_CONST);
 
         pedidoRepository.save(pedido);
         List<PlatoRequestDto> list = new ArrayList<>();
@@ -126,5 +131,29 @@ public class PedidoJpaAdapter implements IPedidoPersistencePort, IListarPedidoPe
         return new Pedido(pedido.getId(), pedido.getIdCliente(),
                 pedido.getIdRestaurante(), pedido.getEstado(),
                 pedido.getFecha(), pedido.getIdChef(), list);
+    }
+
+    @Override
+    public String cancelarPedido(int idCliente, int idPedido) {
+        Optional<PedidoEntity> pedidoOptional = pedidoRepository.findById(idPedido);
+
+        if (pedidoOptional.isEmpty()) {
+            return "El pedido no se encuentra registrado";
+        }
+
+        if(pedidoOptional.get().getIdCliente() != idCliente){
+            return "El pedido no está asignado al cliente";
+        }
+
+        PedidoEntity pedido = pedidoOptional.get();
+        if(!pedido.getEstado().equals(PENDIENTE_CONST)){
+            return "Lo sentimos, tu pedido ya está en preparación y no puede cancelarse";
+        }
+        pedido.setEstado(CANCELADO_CONST);
+
+        pedidoRepository.save(pedido);
+
+
+        return "Pedido cancelado con exito";
     }
 }
