@@ -118,4 +118,14 @@ public class BeanConfiguration {
         return new ListarPedidoUseCase(listarPedidoPersistencePort());
     }
 
+    @Bean
+    public IAsignarPedidoPersistencePort asignarPedidoPersistencePort() {
+        return new PedidoJpaAdapter(pedidoRepository, platoPedidoRepository);
+    }
+
+    @Bean
+    public IAsignarPedidoServicePort asignarPedidoServicePort(){
+        return new AsignarPedidoUseCase(asignarPedidoPersistencePort());
+    }
+
 }

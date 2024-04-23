@@ -2,6 +2,7 @@ package com.pragma.powerup.infrastructure.out.jpa.adapter;
 
 import com.pragma.powerup.application.dto.request.PlatoRequestDto;
 import com.pragma.powerup.domain.model.Pedido;
+import com.pragma.powerup.domain.spi.IAsignarPedidoPersistencePort;
 import com.pragma.powerup.domain.spi.IListarPedidoPersistencePort;
 import com.pragma.powerup.domain.spi.IPedidoPersistencePort;
 import com.pragma.powerup.infrastructure.out.jpa.entity.PedidoEntity;
@@ -16,11 +17,12 @@ import org.springframework.data.domain.PageRequest;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 
-public class PedidoJpaAdapter implements IPedidoPersistencePort, IListarPedidoPersistencePort {
+public class PedidoJpaAdapter implements IPedidoPersistencePort, IListarPedidoPersistencePort, IAsignarPedidoPersistencePort {
 
     private final IPedidoRepository pedidoRepository;
     private final IPlatoPedidoRepository platoPedidoRepository;
@@ -106,4 +108,23 @@ public class PedidoJpaAdapter implements IPedidoPersistencePort, IListarPedidoPe
         );
     }
 
+    @Override
+    public Pedido asignar(int idEmpleado, int idPedido) {
+        Optional<PedidoEntity> pedidoOptional = pedidoRepository.findById(idPedido);
+
+        if(pedidoOptional.isEmpty()){
+            return null;
+        }
+
+        PedidoEntity pedido = pedidoOptional.get();
+        pedido.setIdChef(idEmpleado);
+        pedido.setEstado("En Preparacion");
+
+        pedidoRepository.save(pedido);
+        List<PlatoRequestDto> list = new ArrayList<>();
+
+        return new Pedido(pedido.getId(), pedido.getIdCliente(),
+                pedido.getIdRestaurante(), pedido.getEstado(),
+                pedido.getFecha(), pedido.getIdChef(), list);
+    }
 }
