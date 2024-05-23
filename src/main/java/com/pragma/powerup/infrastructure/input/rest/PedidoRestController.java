@@ -9,6 +9,7 @@ import com.pragma.powerup.application.handler.IAsignarPedidoHandler;
 import com.pragma.powerup.application.handler.ICancelarPedidoHandler;
 import com.pragma.powerup.application.handler.IListarPedidoHandler;
 import com.pragma.powerup.application.handler.IPedidoHandler;
+import com.pragma.powerup.infrastructure.exception.ExceptionMessage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -35,7 +36,7 @@ public class PedidoRestController {
             @ApiResponse(responseCode = "409", description = "El pedido no puedo crearse", content = @Content)
     })
     @PostMapping("/registrar")
-    public ResponseEntity<RealizarPedidoResponseDto> registrar(@RequestBody RealizarPedidoRequestDto requestDto) {
+    public ResponseEntity<RealizarPedidoResponseDto> registrar(@RequestBody RealizarPedidoRequestDto requestDto) throws ExceptionMessage {
         RealizarPedidoResponseDto pedidoResponseDto = pedidoHandler.registrar(requestDto);
         return new ResponseEntity<>(pedidoResponseDto, HttpStatus.OK);
     }
@@ -53,7 +54,7 @@ public class PedidoRestController {
                                                           @RequestParam(defaultValue = "0") int pageSize
                                                           ) {
         PageRequest parametros = PageRequest.of(pageNumber, pageSize);
-        Page<ListarPedidoResponseDto> response = listarPedidoHandler.listarPlatos(idEmpleado, idRestaurante, estado, parametros);
+        Page<ListarPedidoResponseDto> response = listarPedidoHandler.listarPedidos(idEmpleado, idRestaurante, estado, parametros);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

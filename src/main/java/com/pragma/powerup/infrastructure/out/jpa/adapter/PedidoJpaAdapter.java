@@ -6,6 +6,7 @@ import com.pragma.powerup.domain.spi.IAsignarPedidoPersistencePort;
 import com.pragma.powerup.domain.spi.ICancelarPedidoPersistencePort;
 import com.pragma.powerup.domain.spi.IListarPedidoPersistencePort;
 import com.pragma.powerup.domain.spi.IPedidoPersistencePort;
+import com.pragma.powerup.infrastructure.exception.ExceptionMessage;
 import com.pragma.powerup.infrastructure.out.jpa.entity.PedidoEntity;
 import com.pragma.powerup.infrastructure.out.jpa.entity.PlatoPedidoEntity;
 import com.pragma.powerup.infrastructure.out.jpa.repository.IPedidoRepository;
@@ -13,7 +14,6 @@ import com.pragma.powerup.infrastructure.out.jpa.repository.IPlatoPedidoReposito
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -31,17 +31,17 @@ public class PedidoJpaAdapter implements IPedidoPersistencePort, IListarPedidoPe
     String PENDIENTE_CONST = "Pendiente";
     String CANCELADO_CONST = "Cancelado";
     String PREPARACION_CONST = "En Preparación";
-
-
+    String ENTREGADO_CONST = "Entregado";
 
     @Override
-    public Pedido registrar(Pedido pedidoRegistrado) {
+
+    public Pedido registrar(Pedido pedidoRegistrado) throws ExceptionMessage {
         List<PedidoEntity> pedidos = pedidoRepository.findAll();
 
         if (pedidos.stream().anyMatch(item ->
                 item.getIdCliente() == pedidoRegistrado.getIdCliente() &&
-                        PENDIENTE_CONST.equals(item.getEstado()))) {
-            return null;
+                        !ENTREGADO_CONST.equals(item.getEstado()))) {
+            throw new ExceptionMessage("El cliente ya tiene un pedido en proceso");
         }
 
 

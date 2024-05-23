@@ -4,7 +4,6 @@ import com.pragma.powerup.application.dto.request.PlatoRequestDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -12,6 +11,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+
 public class Pedido {
 
     private int id = 0;
@@ -21,4 +21,6 @@ public class Pedido {
     private Date fecha;
     private int idChef = 0;
     private List<PlatoRequestDto> platoRequestDtoList = new ArrayList<>();
+
+
 }

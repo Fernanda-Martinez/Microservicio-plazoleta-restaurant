@@ -28,7 +28,7 @@ public class ListarPlatoHandler implements IListarPlatoHandler {
 
 
 
-    private ListarPlatosResponseDto toPlatoResponse(Plato plato) {
+    public ListarPlatosResponseDto toPlatoResponse(Plato plato) {
 
         ListarPlatosResponseDto dto = new ListarPlatosResponseDto();
         dto.setNombre(plato.getNombre());

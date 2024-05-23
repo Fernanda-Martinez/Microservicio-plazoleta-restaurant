@@ -26,7 +26,7 @@ public class ListarRestauranteHandler implements IListarRestauranteHandler {
         return listarRestaurante.map(this::toRestauranteResponse);
     }
 
-    private ListarRestauranteResponseDto toRestauranteResponse(Restaurante restaurante) {
+    public ListarRestauranteResponseDto toRestauranteResponse(Restaurante restaurante) {
 
         ListarRestauranteResponseDto dto = new ListarRestauranteResponseDto();
         dto.setNombre(restaurante.getNombre());

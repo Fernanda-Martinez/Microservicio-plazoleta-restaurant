@@ -5,6 +5,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/db_plazoleta
     username: root
+    password: admin
 
 
   jpa:

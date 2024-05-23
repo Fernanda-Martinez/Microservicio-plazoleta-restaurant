@@ -1,4 +1,4 @@
-package com.pragma.powerup;
+package com.pragma.powerup.domain.usecase.test;
 
 import com.pragma.powerup.domain.model.Restaurante;
 import com.pragma.powerup.domain.spi.IRestaurantePersistencePort;
@@ -7,13 +7,13 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
-public class RestauranteUseCaseTest {
+class RestauranteUseCaseTest {
 
     private IRestaurantePersistencePort restaurantePersistencePort = mock(IRestaurantePersistencePort.class);
     private RestauranteUseCase restauranteUseCase = new RestauranteUseCase(restaurantePersistencePort);
 
     @Test
-    public void testCrear() {
+    void testCrear() {
         // Arrange
         Restaurante restaurante = new Restaurante();
         restaurante.setNombre("Prueba1");

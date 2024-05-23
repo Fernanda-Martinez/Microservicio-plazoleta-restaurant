@@ -5,6 +5,5 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
 public interface IListarPedidoHandler {
-    Page<ListarPedidoResponseDto> listarPlatos (int idEmpleado, int idRestaurante, String estado, PageRequest pageRequest);
-
+    Page<ListarPedidoResponseDto> listarPedidos(int idEmpleado, int idRestaurante, String estado, PageRequest pageRequest);
 }

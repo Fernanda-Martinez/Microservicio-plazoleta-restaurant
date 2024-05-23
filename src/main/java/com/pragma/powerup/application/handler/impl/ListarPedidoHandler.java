@@ -17,7 +17,7 @@ public class ListarPedidoHandler implements IListarPedidoHandler {
 
     private final IListarPedidoServicePort listarPedidoServicePort;
     @Override
-    public Page<ListarPedidoResponseDto> listarPlatos(int idEmpleado, int idRestaurante, String estado, PageRequest pageRequest) {
+    public Page<ListarPedidoResponseDto> listarPedidos(int idEmpleado, int idRestaurante, String estado, PageRequest pageRequest) {
         Page<Pedido> response = listarPedidoServicePort.listarPedidos(idEmpleado, idRestaurante, estado, pageRequest);
 
         return response.map(this::toDto);

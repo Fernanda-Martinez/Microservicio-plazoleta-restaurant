@@ -130,7 +130,8 @@ class PlatoHandlerTest {
         platoEstadoHandler = new PlatoEstadoHandler(cambiarEstadoPlatoServicePort, platoCambiarEstadoResponseMapper);
     }
 
-
+//se verifica que el método cambiarEstadoPlato llama correctamente a los métodos de los mocks cambiarEstadoPlatoServicePort y platoCambiarEstadoResponseMapper
+// y devuelve el objeto CambiarEstadoPlatoResponseDto con los valores correctos.
     @Test
     void testCambiarEstadoPlato() {
 
