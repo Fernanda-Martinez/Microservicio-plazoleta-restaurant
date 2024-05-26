@@ -15,7 +15,7 @@ public class PlatoModificadoUseCase implements IPlatoModServicePort {
 
 
     @Override
-    public Plato modificar(Plato platoModificado) {
-        return this.platoModPersistencePort.modificar(platoModificado);
+    public Plato modificar(Plato platoModificado, int idPropietario) {
+        return this.platoModPersistencePort.modificar(platoModificado, idPropietario);
     }
 }

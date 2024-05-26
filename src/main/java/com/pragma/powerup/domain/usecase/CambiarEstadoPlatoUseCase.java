@@ -13,7 +13,7 @@ public class CambiarEstadoPlatoUseCase implements ICambiarEstadoPlatoServicePort
     }
 
     @Override
-    public Plato cambiarEstado(int id) {
-        return this.habilitarDeshabilitarPlatoPersistencePort.cambiarEstado(id);
+    public Plato cambiarEstado(int id, int idPropietario) {
+        return this.habilitarDeshabilitarPlatoPersistencePort.cambiarEstado(id, idPropietario);
     }
 }

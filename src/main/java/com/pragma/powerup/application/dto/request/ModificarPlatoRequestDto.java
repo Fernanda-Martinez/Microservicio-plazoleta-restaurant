@@ -16,4 +16,5 @@ public class ModificarPlatoRequestDto {
     @Digits(integer = 10, fraction = 0, message = "El número debe ser un entero positivo")
     @Positive(message = "El número debe ser positivo y mayor a 0")
     private int precio;
+    private int idPropietario;
 }

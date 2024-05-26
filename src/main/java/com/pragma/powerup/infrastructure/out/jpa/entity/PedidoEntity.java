@@ -26,5 +26,6 @@ public class PedidoEntity {
     private String estado;
     private int idChef;
     private int idRestaurante;
+    private String pin = null;
 
 }

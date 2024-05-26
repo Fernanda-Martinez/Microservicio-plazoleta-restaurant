@@ -19,6 +19,7 @@ public class CrearRestauranteRequestDto {
     private String telefono;
     private String urlLogo;
     private int nit;
+    private int idAdmin;
 
 
 }

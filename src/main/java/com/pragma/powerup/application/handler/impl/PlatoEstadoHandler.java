@@ -1,5 +1,6 @@
 package com.pragma.powerup.application.handler.impl;
 
+
 import com.pragma.powerup.application.dto.response.CambiarEstadoPlatoResponseDto;
 import com.pragma.powerup.application.handler.IPlatoEstadoHandler;
 import com.pragma.powerup.application.mapper.IPlatoCambiarEstadoResponseMapper;
@@ -14,12 +15,15 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 
 public class PlatoEstadoHandler implements IPlatoEstadoHandler {
+
     private final ICambiarEstadoPlatoServicePort habilitarDeshabilitarPlatoServicePort ;
     private final IPlatoCambiarEstadoResponseMapper platoCambiarEstadoResponseMapper;
 
+
     @Override
-    public CambiarEstadoPlatoResponseDto cambiarEstadoPlato(int id) {
-        Plato response = habilitarDeshabilitarPlatoServicePort.cambiarEstado(id) ;
+    public CambiarEstadoPlatoResponseDto cambiarEstadoPlato(int id, int idPropietario) {
+
+        Plato response = habilitarDeshabilitarPlatoServicePort.cambiarEstado(id, idPropietario) ;
         return platoCambiarEstadoResponseMapper.toResponse(response);
     }
 }

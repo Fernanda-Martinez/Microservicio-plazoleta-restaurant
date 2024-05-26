@@ -14,9 +14,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -37,8 +37,14 @@ public class PlatoRestController {
     @PostMapping("/crear")
     public ResponseEntity<CrearPlatoResponseDto> crear(@RequestBody CrearPlatoRequestDto platoRequestDto) {
         CrearPlatoResponseDto platoResponseDto = platoHandler.crearPlato(platoRequestDto);
-        return new ResponseEntity<>(platoResponseDto, HttpStatus.CREATED);
+        if(platoResponseDto != null){
+            return new ResponseEntity<>(platoResponseDto, HttpStatus.CREATED);
+        }
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .build();
     }
+
 
 
     @Operation(summary = "Modificar un plato del menú de mi restaurante")
@@ -57,9 +63,10 @@ public class PlatoRestController {
             @ApiResponse(responseCode = "200", description = "El plato cambio su estado", content = @Content),
             @ApiResponse(responseCode = "409", description = "El plato no existe", content = @Content)
     })
+    @PreAuthorize("hasRole('ROLE_propietario')")
     @PutMapping("/cambiarEstado")
-    public ResponseEntity<CambiarEstadoPlatoResponseDto> cambiarEstado(@RequestParam(name = "id") int id){
-        CambiarEstadoPlatoResponseDto cambiarEstadoPlatoResponseDto = platoEstadoHandler.cambiarEstadoPlato(id);
+    public ResponseEntity<CambiarEstadoPlatoResponseDto> cambiarEstado(@RequestParam(name = "id") int id, int idPropietario){
+        CambiarEstadoPlatoResponseDto cambiarEstadoPlatoResponseDto = platoEstadoHandler.cambiarEstadoPlato(id, idPropietario);
         return new ResponseEntity<>(cambiarEstadoPlatoResponseDto,HttpStatus.OK);
     }
 
@@ -69,11 +76,11 @@ public class PlatoRestController {
             @ApiResponse(responseCode = "201", description = "platos listados", content = @Content),
             @ApiResponse(responseCode = "409", description = "No hay platos en la base de datos", content = @Content)
     })
-
+    @PreAuthorize("hasRole('ROLE_cliente')")
     @GetMapping("/listar")
-    public ResponseEntity<Page<ListarPlatosResponseDto>> listarPlato(@RequestParam(defaultValue = "0") int pageNumber, @RequestParam(defaultValue = "10") int pageSize, @RequestParam(required = false) Integer idCategoria,
+    public ResponseEntity<Page<ListarPlatosResponseDto>> listarPlato(@RequestParam(defaultValue = "0") int pageNumber, @RequestParam(defaultValue = "10") int pageSize, @RequestParam(required = false) int idCategoria,
                                                                      @RequestParam int idRestaurante){
-        PageRequest parametros = PageRequest.of(pageNumber,pageSize, Sort.by("nombre").ascending());
+        PageRequest parametros = PageRequest.of(pageNumber,pageSize);
         Page<ListarPlatosResponseDto> responseDto = listarPlatoHandler.listarPlatos(parametros,idCategoria,idRestaurante);
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
 

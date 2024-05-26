@@ -5,6 +5,5 @@ import com.pragma.powerup.application.dto.response.CrearRestauranteResponseDto;
 
 public interface IRestauranteHandler {
 
-    CrearRestauranteResponseDto crearRestaurante(CrearRestauranteRequestDto restauranteRequestDto);
-
+    CrearRestauranteResponseDto crear(CrearRestauranteRequestDto crearRestauranteRequestDto);
 }

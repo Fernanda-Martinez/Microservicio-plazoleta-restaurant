@@ -4,6 +4,7 @@ import com.pragma.powerup.domain.api.IPlatoServicePort;
 import com.pragma.powerup.domain.model.Plato;
 import com.pragma.powerup.domain.spi.IPlatoPersistencePort;
 
+
 public class PlatoUseCase implements IPlatoServicePort {
 
     private final IPlatoPersistencePort platoPersistencePort;
@@ -13,7 +14,7 @@ public class PlatoUseCase implements IPlatoServicePort {
     }
 
     @Override
-    public Plato crear(Plato plato) {
-        return this.platoPersistencePort.crear(plato);
+    public Plato crear(Plato plato, int idPropietario) {
+        return this.platoPersistencePort.crear(plato, idPropietario);
     }
 }

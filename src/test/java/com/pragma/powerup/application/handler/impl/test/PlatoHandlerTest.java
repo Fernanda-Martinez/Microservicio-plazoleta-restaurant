@@ -1,5 +1,6 @@
 package com.pragma.powerup.application.handler.impl.test;
 
+import com.pragma.powerup.application.client.IUsuarioFeignClient;
 import com.pragma.powerup.application.dto.request.CrearPlatoRequestDto;
 import com.pragma.powerup.application.dto.request.ModificarPlatoRequestDto;
 import com.pragma.powerup.application.dto.response.CambiarEstadoPlatoResponseDto;
@@ -10,6 +11,7 @@ import com.pragma.powerup.application.handler.impl.PlatoHandler;
 import com.pragma.powerup.application.handler.impl.PlatoModifHandler;
 import com.pragma.powerup.application.mapper.*;
 import com.pragma.powerup.domain.api.ICambiarEstadoPlatoServicePort;
+import com.pragma.powerup.domain.api.IHttpRequestServicePort;
 import com.pragma.powerup.domain.api.IPlatoModServicePort;
 import com.pragma.powerup.domain.api.IPlatoServicePort;
 import com.pragma.powerup.domain.model.Plato;
@@ -46,6 +48,12 @@ class PlatoHandlerTest {
     @Mock
     private IPlatoModifResponseMapper platoModifResponseMapper;
 
+    @Mock
+    private IHttpRequestServicePort httpRequestServicePort;
+
+    @Mock
+    private IUsuarioFeignClient usuarioFeignClient;
+
 
     @InjectMocks
     private PlatoHandler platoHandler;
@@ -71,6 +79,7 @@ class PlatoHandlerTest {
         plato.setActivo(true);
         when(platoRequestMapper.toPlato(requestDto)).thenReturn(plato);
         when(platoServicePort.crear(plato)).thenReturn(plato);
+
 
         CrearPlatoResponseDto responseDto = new CrearPlatoResponseDto();
         responseDto.setNombre("Plato Test");
@@ -107,13 +116,21 @@ class PlatoHandlerTest {
         ModificarPlatoRequestDto requestDto = new ModificarPlatoRequestDto();
         Plato plato = new Plato();
         plato.setNombre("Plato Test");
+        plato.setDescripcion("No se");
         plato.setPrecio(100);
+
+        requestDto.setPrecio(100);
+        requestDto.setIdPropietario(2);
+        requestDto.setId(0);
+        requestDto.setDescripcion("No se");
         when(platoModifRequestMapper.toPlatoModif(requestDto)).thenReturn(plato);
-        when(platoModServicePort.modificar(plato)).thenReturn(plato);
+        when(platoModServicePort.modificar(plato, requestDto.getIdPropietario())).thenReturn(plato);
         ModificarPlatoResponseDto responseDto = new ModificarPlatoResponseDto();
         responseDto.setNombre("Plato Modif");
         responseDto.setPrecio(230);
         when(platoModifResponseMapper.toResponse(plato)).thenReturn(responseDto);
+        when(usuarioFeignClient.validateOwnerRole("token", requestDto.getIdPropietario())).thenReturn(true);
+
 
         ModificarPlatoResponseDto result = platoModifHandler.modificarPlato(requestDto);
 
@@ -138,7 +155,7 @@ class PlatoHandlerTest {
         int id = 1;
         Plato plato = new Plato();
         plato.setId(id);
-        when(cambiarEstadoPlatoServicePort.cambiarEstado(id)).thenReturn(plato);
+        //when(cambiarEstadoPlatoServicePort.cambiarEstado(id, )).thenReturn(plato);
         CambiarEstadoPlatoResponseDto responseDto = new CambiarEstadoPlatoResponseDto();
         responseDto.setIdRestaurante(id);
         when(platoCambiarEstadoResponseMapper.toResponse(plato)).thenReturn(responseDto);

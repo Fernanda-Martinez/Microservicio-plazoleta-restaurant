@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface IPlatoRepository extends JpaRepository<PlatoEntity, Integer> {
 
@@ -17,5 +19,11 @@ public interface IPlatoRepository extends JpaRepository<PlatoEntity, Integer> {
             @Param("idCategoria") Integer idCategoria,
             @Param("idRestaurante") Integer idRestaurante
     );
+
+    @Query("SELECT p FROM PlatoEntity p WHERE p.nombre = :nombre")
+    Optional<PlatoEntity> buscarNombrePlato(
+            @Param("nombre") String nombre
+    );
+
 }
 
