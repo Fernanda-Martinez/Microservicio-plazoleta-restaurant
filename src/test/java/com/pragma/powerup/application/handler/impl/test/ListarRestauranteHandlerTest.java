@@ -9,8 +9,10 @@ import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -20,6 +22,7 @@ import com.pragma.powerup.application.handler.impl.ListarRestauranteHandler;
 import com.pragma.powerup.domain.api.IListarRestauranteServicePort;
 import com.pragma.powerup.domain.model.Restaurante;
 
+@ExtendWith(MockitoExtension.class)
 class ListarRestauranteHandlerTest {
 
    @Mock

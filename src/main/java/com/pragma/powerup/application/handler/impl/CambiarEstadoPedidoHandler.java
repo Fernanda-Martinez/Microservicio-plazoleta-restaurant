@@ -14,6 +14,7 @@ import com.pragma.powerup.domain.api.ICambiarEstadoPedidoServicePort;
 import com.pragma.powerup.domain.api.IHttpRequestServicePort;
 import com.pragma.powerup.domain.model.Pedido;
 import com.pragma.powerup.domain.model.Restaurante;
+import com.pragma.powerup.infrastructure.exception.PedidoInexistente;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,7 +36,9 @@ public class CambiarEstadoPedidoHandler implements ICambiarEstadoPedidoHandler {
     public CambiarEstadoPedidoResponseDto cambiarEstadoPedido(int idEmpleado, int idPedido) {
 
         Pedido pedido = asignarPedidoServicePort.buscarPedido(idPedido);
-
+        if (pedido == null) {
+            throw new PedidoInexistente("El pedido no existe");
+        }
         if (usuarioFeignClient.validateEmployeeRestaurant(
                 httpRequestServicePort.getToken(),
                 idEmpleado,
