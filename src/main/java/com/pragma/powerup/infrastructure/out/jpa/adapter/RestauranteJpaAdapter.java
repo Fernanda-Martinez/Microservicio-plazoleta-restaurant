@@ -24,6 +24,9 @@ public class RestauranteJpaAdapter implements IRestaurantePersistencePort, IList
         if(restaurantRepository.buscarNombreRestaurante(restaurante.getNombre()).isPresent()){
             throw new PlatoExistente("El restaurante ya existe");
         }
+        if(restaurantRepository.buscarNitRestaurante(restaurante.getNit()).isPresent()){
+            throw new PlatoExistente("El restaurante ya existe");
+        }
         RestauranteEntity nuevoRestaurante = restaurantRepository.save(restauranteEntityMapper.toEntity(restaurante));
         return restauranteEntityMapper.toRestauranteModel(nuevoRestaurante);
     }

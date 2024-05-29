@@ -51,7 +51,7 @@ public class PedidoJpaAdapter implements IPedidoPersistencePort, IListarPedidoPe
 
         if (pedidos.stream().anyMatch(item ->
                 item.getIdCliente() == pedidoRegistrado.getIdCliente() &&
-                        !ENTREGADO_CONST.equals(item.getEstado()))) {
+                        (!ENTREGADO_CONST.equals(item.getEstado())))) {
             throw new ExceptionMessage("El cliente ya tiene un pedido en proceso");
         }
 

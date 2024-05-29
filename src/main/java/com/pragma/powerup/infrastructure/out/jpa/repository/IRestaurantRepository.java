@@ -13,4 +13,8 @@ public interface IRestaurantRepository extends JpaRepository<RestauranteEntity, 
     Optional<RestauranteEntity> buscarNombreRestaurante(
             @Param("nombre") String nombre
     );
+    @Query("SELECT p FROM RestauranteEntity p WHERE p.nit = :nit")
+    Optional<RestauranteEntity> buscarNitRestaurante(
+            @Param("nit") Integer nit
+    );
 }

@@ -1,8 +1,9 @@
 package com.pragma.powerup.application.handler.impl.test;
 
-
+import com.pragma.powerup.application.client.IUsuarioFeignClient;
 import com.pragma.powerup.application.dto.response.ListarPedidoResponseDto;
 import com.pragma.powerup.application.handler.impl.ListarPedidoHandler;
+import com.pragma.powerup.domain.api.IHttpRequestServicePort;
 import com.pragma.powerup.domain.api.IListarPedidoServicePort;
 import com.pragma.powerup.domain.model.Pedido;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,10 +18,17 @@ import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class ListarPedidoHandlerTest {
+    @Mock
+    private IHttpRequestServicePort httpRequestServicePort;
+
+    @Mock
+    private IUsuarioFeignClient usuarioFeignClient;
 
     @Mock
     private IListarPedidoServicePort listarPedidoServicePort;
@@ -30,43 +38,50 @@ class ListarPedidoHandlerTest {
     @BeforeEach
     public void setUp() {
         listarPedidoServicePort = mock(IListarPedidoServicePort.class);
-        listarPedidoHandler = new ListarPedidoHandler(listarPedidoServicePort);
+        listarPedidoHandler = new ListarPedidoHandler(
+                listarPedidoServicePort,
+                httpRequestServicePort,
+                usuarioFeignClient);
     }
 
     @Test
     void testListarPedidos() {
 
         int idEmpleado = 1;
-        int idRestaurante = 2;
+        int idRestaurante = 1;
+        when(httpRequestServicePort.getToken()).thenReturn("");
+        when(usuarioFeignClient.validateEmployeeRestaurant(anyString(), idEmpleado, idRestaurante)).thenReturn(true);
+
         String estado = "PENDIENTE";
         PageRequest pageRequest = PageRequest.of(0, 10);
-        Page<Pedido> pedidos = createPedidosPage();
 
-        when(listarPedidoServicePort.listarPedidos(idEmpleado, idRestaurante, estado, pageRequest))
-                .thenReturn(pedidos);
+        List<Pedido> pedidos = new ArrayList<>();
+        pedidos.add(new Pedido(1, 1, 1, "PENDIENTE", null, 1, null));
+        pedidos.add(new Pedido(2, 1, 1, "PENDIENTE", null, 1, null));
+        Page<Pedido> pagePedidos = new PageImpl<>(pedidos);
 
-        Page<ListarPedidoResponseDto> result = listarPedidoHandler.listarPedidos(idEmpleado, idRestaurante, estado, pageRequest);
 
+         when(listarPedidoServicePort.listarPedidos(idEmpleado, idRestaurante, estado, pageRequest)).thenReturn(pagePedidos);
 
-        assertEquals(pedidos.getTotalElements(), result.getTotalElements());
-        assertEquals(1, result.getContent().size());
-        assertEquals(pedidos.getContent().get(0).getId(), result.getContent().get(0).getId());
-        assertEquals(pedidos.getContent().get(0).getEstado(), result.getContent().get(0).getEstado());
-        assertEquals(pedidos.getContent().get(0).getIdRestaurante(), result.getContent().get(0).getIdRestaurante());
-        assertEquals(pedidos.getContent().get(0).getFecha(), result.getContent().get(0).getFecha());
+        Page<ListarPedidoResponseDto> response = listarPedidoHandler.listarPedidos(idEmpleado, idRestaurante, estado, pageRequest);
+
+        assertEquals(2, response.getContent().size());
+        assertEquals(1, response.getContent().get(0).getId());
+        assertEquals(1, response.getContent().get(0).getIdRestaurante());
+        assertEquals("PENDIENTE", response.getContent().get(0).getEstado());
+        assertEquals(2, response.getContent().get(1).getId());
+        assertEquals(1, response.getContent().get(1).getIdRestaurante());
+        assertEquals("PENDIENTE", response.getContent().get(1).getEstado());
+
     }
 
-    private Page<Pedido> createPedidosPage() {
-        Pedido pedido = new Pedido();
-        pedido.setId(1);
-        pedido.setEstado("PENDIENTE");
-        pedido.setIdRestaurante(2);
-        pedido.setFecha(new Date());
+    private ListarPedidoResponseDto toDto(Pedido pedido){
+        ListarPedidoResponseDto dto = new ListarPedidoResponseDto();
+        dto.setId(pedido.getId());
+        dto.setEstado(pedido.getEstado());
+        dto.setIdRestaurante(pedido.getIdRestaurante());
+        dto.setFecha(pedido.getFecha());
 
-        List<Pedido> pedidosList = new ArrayList<>();
-        pedidosList.add(pedido);
-
-        return new PageImpl<>(pedidosList);
-
+        return dto;
     }
 }

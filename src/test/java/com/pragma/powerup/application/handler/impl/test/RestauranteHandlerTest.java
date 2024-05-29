@@ -8,7 +8,6 @@ import com.pragma.powerup.application.mapper.IRestauranteRequestMapper;
 import com.pragma.powerup.domain.api.IHttpRequestServicePort;
 import com.pragma.powerup.domain.api.IRestauranteServicePort;
 import com.pragma.powerup.domain.model.Restaurante;
-import com.pragma.powerup.infrastructure.http.HttpRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,16 +15,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class RestauranteHandlerTest {
-@Mock
-private CrearRestauranteRequestDto restauranteRequestDto;
+    @Mock
+    private CrearRestauranteRequestDto restauranteRequestDto;
     @Mock
     private IRestauranteServicePort restauranteServicePort;
 
@@ -80,7 +78,20 @@ private CrearRestauranteRequestDto restauranteRequestDto;
         assertEquals(restaurante.getNit(), responseDto.getNit());
 
     }
+    @Test
+    void saveRestaurantFailed(){
 
+        when(httpRequestServicePort.getToken()).thenReturn("");// Devuelve una cadena vacía
+        when(usuarioFeignClient.validateAdminRole(anyString(), anyInt())).thenReturn(false);
+
+
+        CrearRestauranteResponseDto result = restauranteHandler.crear(restauranteRequestDto);
+
+        verify(httpRequestServicePort, times(1)).getToken();
+        verify(usuarioFeignClient, times(1)).validateAdminRole(anyString(), anyInt());
+
+        assertNull(result); // Verifica que el resultado sea nulo
+    }
 
 
 

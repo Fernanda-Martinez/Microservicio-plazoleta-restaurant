@@ -6,6 +6,7 @@ import com.pragma.powerup.application.dto.request.ModificarPlatoRequestDto;
 import com.pragma.powerup.application.dto.response.CambiarEstadoPlatoResponseDto;
 import com.pragma.powerup.application.dto.response.CrearPlatoResponseDto;
 import com.pragma.powerup.application.dto.response.ModificarPlatoResponseDto;
+import com.pragma.powerup.application.handler.IPlatoHandler;
 import com.pragma.powerup.application.handler.impl.PlatoEstadoHandler;
 import com.pragma.powerup.application.handler.impl.PlatoHandler;
 import com.pragma.powerup.application.handler.impl.PlatoModifHandler;
@@ -15,24 +16,22 @@ import com.pragma.powerup.domain.api.IHttpRequestServicePort;
 import com.pragma.powerup.domain.api.IPlatoModServicePort;
 import com.pragma.powerup.domain.api.IPlatoServicePort;
 import com.pragma.powerup.domain.model.Plato;
-
 import org.junit.jupiter.api.BeforeEach;
-
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.MockitoAnnotations;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
 class PlatoHandlerTest {
 
     @Mock
     private IPlatoServicePort platoServicePort;
+
     @Mock
     private IPlatoModServicePort platoModServicePort;
 
@@ -43,17 +42,25 @@ class PlatoHandlerTest {
     private IPlatoResponseMapper platoResponseMapper;
 
     @Mock
+    private IPlatoModifResponseMapper platoModifResponseMapper;
+
+    @Mock
     private IPlatoModifRequestMapper platoModifRequestMapper;
 
     @Mock
-    private IPlatoModifResponseMapper platoModifResponseMapper;
+    private IUsuarioFeignClient usuarioFeignClient;
 
     @Mock
     private IHttpRequestServicePort httpRequestServicePort;
 
     @Mock
-    private IUsuarioFeignClient usuarioFeignClient;
+    private ICambiarEstadoPlatoServicePort habilitarDeshabilitarPlatoServicePort;
 
+    @Mock
+    private IPlatoCambiarEstadoResponseMapper platoCambiarEstadoResponseMapper;
+
+    @InjectMocks
+    private PlatoEstadoHandler platoEstadoHandler;
 
     @InjectMocks
     private PlatoHandler platoHandler;
@@ -61,107 +68,92 @@ class PlatoHandlerTest {
     @InjectMocks
     private PlatoModifHandler platoModifHandler;
 
-    private PlatoEstadoHandler platoEstadoHandler;
-    private ICambiarEstadoPlatoServicePort cambiarEstadoPlatoServicePort;
-    private IPlatoCambiarEstadoResponseMapper platoCambiarEstadoResponseMapper;
-
-    @Test
-    void crearPlato() {
-        // Arrange
-        CrearPlatoRequestDto requestDto = new CrearPlatoRequestDto();
-        Plato plato = new Plato();
-        plato.setNombre("Plato Test");
-        plato.setPrecio(100);
-        plato.setIdCategoria(1);
-        plato.setDescripcion("plato test 1");
-        plato.setIdRestaurante(1);
-        plato.setUrlImagen("https://pizza.com");
-        plato.setActivo(true);
-        when(platoRequestMapper.toPlato(requestDto)).thenReturn(plato);
-        when(platoServicePort.crear(plato)).thenReturn(plato);
-
-
-        CrearPlatoResponseDto responseDto = new CrearPlatoResponseDto();
-        responseDto.setNombre("Plato Test");
-        responseDto.setPrecio(100);
-        when(platoResponseMapper.toResponse(plato)).thenReturn(responseDto);
-
-        // Act
-        CrearPlatoResponseDto result = platoHandler.crearPlato(requestDto);
-
-        // Assert
-        assertEquals("Plato Test", result.getNombre());
-        assertEquals(100, result.getPrecio(), 0.0);
-    }
-
-    @DisplayName("verifica que el método crearPlato devuelve el CrearplatoResponseDto esperado y " +
-            "llama al platoServicePort con el objeto Plato correcto.")
-    @Test
-    void platoCorrecto() {
-        // Arrange
-        CrearPlatoRequestDto requestDto = new CrearPlatoRequestDto();
-        Plato plato = new Plato();
-        when(platoRequestMapper.toPlato(requestDto)).thenReturn(plato);
-
-        // Act
-        platoHandler.crearPlato(requestDto);
-
-        // Assert
-        verify(platoServicePort).crear(plato);
-    }
-
-    @Test
-    void modificarPlatos() {
-        // Arrange
-        ModificarPlatoRequestDto requestDto = new ModificarPlatoRequestDto();
-        Plato plato = new Plato();
-        plato.setNombre("Plato Test");
-        plato.setDescripcion("No se");
-        plato.setPrecio(100);
-
-        requestDto.setPrecio(100);
-        requestDto.setIdPropietario(2);
-        requestDto.setId(0);
-        requestDto.setDescripcion("No se");
-        when(platoModifRequestMapper.toPlatoModif(requestDto)).thenReturn(plato);
-        when(platoModServicePort.modificar(plato, requestDto.getIdPropietario())).thenReturn(plato);
-        ModificarPlatoResponseDto responseDto = new ModificarPlatoResponseDto();
-        responseDto.setNombre("Plato Modif");
-        responseDto.setPrecio(230);
-        when(platoModifResponseMapper.toResponse(plato)).thenReturn(responseDto);
-        when(usuarioFeignClient.validateOwnerRole("token", requestDto.getIdPropietario())).thenReturn(true);
-
-
-        ModificarPlatoResponseDto result = platoModifHandler.modificarPlato(requestDto);
-
-        assertEquals("Plato Modif", result.getNombre());
-        assertEquals(230, result.getPrecio(), 0.0);
-    }
-
-    //  Se simulan las interfaces ICambiarEstadoPlatoServicePort e IPlatoCambiarEstadoResponseMapper utilizando Mockito.
-    //  Luego, se crea una instancia de PlatoEstadoHandler y le pasamos las dependencias simuladas.
     @BeforeEach
-    public void setUp() {
-        cambiarEstadoPlatoServicePort = mock(ICambiarEstadoPlatoServicePort.class);
-        platoCambiarEstadoResponseMapper = mock(IPlatoCambiarEstadoResponseMapper.class);
-        platoEstadoHandler = new PlatoEstadoHandler(cambiarEstadoPlatoServicePort, platoCambiarEstadoResponseMapper);
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
     }
 
-//se verifica que el método cambiarEstadoPlato llama correctamente a los métodos de los mocks cambiarEstadoPlatoServicePort y platoCambiarEstadoResponseMapper
-// y devuelve el objeto CambiarEstadoPlatoResponseDto con los valores correctos.
+    @Test
+    void crearPlato_UsuarioEsPropietario() {
+        CrearPlatoRequestDto platoRequestDto = new CrearPlatoRequestDto();
+        platoRequestDto.setIdPropietario(1);
+
+        when(httpRequestServicePort.getToken()).thenReturn(" token_propietario");
+        when(usuarioFeignClient.validateOwnerRole(anyString(), anyInt())).thenReturn(true);
+
+        Plato plato = new Plato();
+        when(platoRequestMapper.toPlato(platoRequestDto)).thenReturn(plato);
+        plato.setNombre("Carne");
+        plato.setDescripcion("Descripción");
+        plato.setPrecio(10600);
+
+        when(platoResponseMapper.toResponse(plato)).thenReturn(new CrearPlatoResponseDto());
+
+        CrearPlatoResponseDto responseDto = platoHandler.crearPlato(platoRequestDto);
+
+        assertNotNull(responseDto);
+        verify(platoServicePort, times(1)).crear(plato, 1);
+    }
+
+
+    @Test
+    void crearPlato_UsuarioNoEsPropietario() {
+        CrearPlatoRequestDto platoRequestDto = new CrearPlatoRequestDto();
+        platoRequestDto.setIdPropietario(1);
+
+        when(httpRequestServicePort.getToken()).thenReturn("token_NOpropietario");
+        when(usuarioFeignClient.validateOwnerRole(anyString(), anyInt())).thenReturn(false);
+
+        CrearPlatoResponseDto responseDto = platoHandler.crearPlato(platoRequestDto);
+
+        assertNull(responseDto);
+        verify(platoServicePort, never()).crear(any(), anyInt());
+    }
+
+    //Modificar Plato
+    @Test
+    void modificarPlato_UsuarioEsPropietario() {
+        ModificarPlatoRequestDto modificarPlatoRequestDto = new ModificarPlatoRequestDto();
+        modificarPlatoRequestDto.setIdPropietario(1);
+
+        when(httpRequestServicePort.getToken()).thenReturn("token_propietario");
+        when(usuarioFeignClient.validateOwnerRole(anyString(), anyInt())).thenReturn(true);
+
+        Plato plato = new Plato();
+        plato.setNombre("Carne");
+        when(platoModifRequestMapper.toPlatoModif(modificarPlatoRequestDto)).thenReturn(plato);
+        plato.setNombre("Sopa");
+
+        when(platoModServicePort.modificar(plato, modificarPlatoRequestDto.getIdPropietario())).thenReturn(plato);
+        when(platoModifResponseMapper.toResponse(plato)).thenReturn(new ModificarPlatoResponseDto());
+
+        ModificarPlatoResponseDto responseDto = platoModifHandler.modificarPlato(modificarPlatoRequestDto);
+
+        assertNotNull(responseDto); // Verifica que la respuesta no sea nula
+        verify(platoModServicePort, times(1)).modificar(plato, 1);
+        assertEquals("Sopa", plato.getNombre());
+    }
+
+    //Habilitar y deshabilitar plato
     @Test
     void testCambiarEstadoPlato() {
 
-        int id = 1;
+
         Plato plato = new Plato();
-        plato.setId(id);
-        //when(cambiarEstadoPlatoServicePort.cambiarEstado(id, )).thenReturn(plato);
-        CambiarEstadoPlatoResponseDto responseDto = new CambiarEstadoPlatoResponseDto();
-        responseDto.setIdRestaurante(id);
-        when(platoCambiarEstadoResponseMapper.toResponse(plato)).thenReturn(responseDto);
+        plato.setId(1);
+        plato.setActivo(true);
 
-        CambiarEstadoPlatoResponseDto response = platoEstadoHandler.cambiarEstadoPlato(id);
+        CambiarEstadoPlatoResponseDto expectedResponse = new CambiarEstadoPlatoResponseDto();
 
-        assertEquals(id, response.getIdRestaurante());
-    }
+        when(habilitarDeshabilitarPlatoServicePort.cambiarEstado(anyInt(), anyInt())).thenReturn(plato);
+        when(platoCambiarEstadoResponseMapper.toResponse(plato)).thenReturn(expectedResponse);
+
+        CambiarEstadoPlatoResponseDto response = platoEstadoHandler.cambiarEstadoPlato(1, 1);
+
+        assertEquals(expectedResponse, response);
+     }
 }
+
+
+
+

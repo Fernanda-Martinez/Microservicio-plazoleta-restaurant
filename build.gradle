@@ -37,6 +37,7 @@ dependencies {
 	implementation "org.springframework.boot:spring-boot-starter-web:${springBootVersion}"
 	developmentOnly "org.springframework.boot:spring-boot-devtools:${springBootVersion}"
 	testImplementation "org.springframework.boot:spring-boot-starter-test:${springBootVersion}"
+	testImplementation 'junit:junit:4.13.2'
 
 	runtimeOnly "mysql:mysql-connector-java:${mySqlConnectorVersion}"
 

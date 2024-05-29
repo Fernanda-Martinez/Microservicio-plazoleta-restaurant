@@ -1,54 +1,72 @@
 package com.pragma.powerup.application.handler.impl.test;
-
-import com.pragma.powerup.application.dto.request.RealizarPedidoRequestDto;
+import com.pragma.powerup.application.client.ITrazaFeignClient;
+import com.pragma.powerup.application.client.IUsuarioFeignClient;
+import com.pragma.powerup.application.dto.request.CrearTrazaRequestDto;
 import com.pragma.powerup.application.dto.request.PlatoRequestDto;
+import com.pragma.powerup.application.dto.request.RealizarPedidoRequestDto;
+import com.pragma.powerup.application.dto.response.CrearTrazaResponseDto;
 import com.pragma.powerup.application.dto.response.RealizarPedidoResponseDto;
 import com.pragma.powerup.application.handler.impl.PedidoHandler;
-import com.pragma.powerup.application.mapper.IPedidoRequestMapper;
-import com.pragma.powerup.application.mapper.IPedidoResponseMapper;
+import com.pragma.powerup.domain.api.IHttpRequestServicePort;
 import com.pragma.powerup.domain.api.IPedidoServicePort;
+import com.pragma.powerup.domain.api.IRestauranteServicePort;
 import com.pragma.powerup.domain.model.Pedido;
+import com.pragma.powerup.application.dto.response.UserInfoResponseDto;
+import com.pragma.powerup.domain.model.Restaurante;
 import com.pragma.powerup.infrastructure.exception.ExceptionMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest
-
-class PedidoHandlerTest {
+ class PedidoHandlerTest {
 
     @Mock
     private IPedidoServicePort pedidoServicePort;
 
     @Mock
-    private IPedidoResponseMapper pedidoResponseMapper;
+    private ITrazaFeignClient trazaFeignClient;
 
+    @Mock
+    private IUsuarioFeignClient usuarioFeignClient;
+
+    @Mock
+    private IHttpRequestServicePort httpRequestServicePort;
+    @Mock
+    private IRestauranteServicePort restauranteServicePort;
+
+@InjectMocks
     private PedidoHandler pedidoHandler;
+@Mock
+    private UserInfoResponseDto userInfoResponseDto;
+    private Restaurante restaurante;
 
     @BeforeEach
     public void setUp() {
-        pedidoServicePort = mock(IPedidoServicePort.class);
-        pedidoHandler = new PedidoHandler(pedidoServicePort);
+        MockitoAnnotations.initMocks(this);
+        pedidoHandler = new PedidoHandler(
+                pedidoServicePort,
+                trazaFeignClient,
+                usuarioFeignClient,
+                httpRequestServicePort
+        );
     }
 
-    //Se crea el objeto RealizarPedidoRequestDto y Pedido, se simula el metodo registrar
-
     @Test
-    void testRegistrar() throws ExceptionMessage {
-        // Dado
-        RealizarPedidoRequestDto request = new RealizarPedidoRequestDto();
-        request.setIdCliente(1);
-        request.setIdRestaurante(2);
+    void registrarPedido() throws ExceptionMessage {
+
+        RealizarPedidoRequestDto requestDto = new RealizarPedidoRequestDto();
+        requestDto.setIdCliente(1);
+        requestDto.setIdRestaurante(1);
         List<PlatoRequestDto> platoRequestDtoList = new ArrayList<>();
 
         PlatoRequestDto plato1 = new PlatoRequestDto();
@@ -60,32 +78,44 @@ class PedidoHandlerTest {
         plato2.setIdPlato(2);
         plato2.setCantidad(1);
         platoRequestDtoList.add(plato2);
-        request.setPlatoRequestDtoList(platoRequestDtoList);
+
+        requestDto.setPlatoRequestDtoList(platoRequestDtoList);
 
         Pedido pedido = new Pedido();
-        pedido.setId(3);
+        pedido.setId(1);
         pedido.setIdCliente(1);
         pedido.setIdRestaurante(2);
         pedido.setEstado("Pendiente");
         pedido.setFecha(new Date());
         pedido.setPlatoRequestDtoList(platoRequestDtoList);
         when(pedidoServicePort.registrar(any(Pedido.class))).thenReturn(pedido);
+
+        UserInfoResponseDto cliente = new UserInfoResponseDto();
+        cliente.setEmail(" ");
+        when(usuarioFeignClient.getUser(anyString(), anyInt())).thenReturn(cliente);
+
+        CrearTrazaRequestDto trazaRequestDto = new CrearTrazaRequestDto();
+        trazaRequestDto.setIdEmpleado(1);
+        trazaRequestDto.setIdPedido(1);
+        trazaRequestDto.setIdCliente("1");
+        trazaRequestDto.setCorreoEmpleado("");
+        trazaRequestDto.setCorreoCliente(cliente.getEmail());
+        trazaRequestDto.setNuevoEstado(pedido.getEstado());
+
+        when(trazaFeignClient.crear(anyString(), anyInt(), anyInt(), anyInt(), anyString(), anyString(), anyString())).thenReturn(new CrearTrazaResponseDto());
+
         RealizarPedidoResponseDto responseDto = new RealizarPedidoResponseDto();
-        responseDto.setIdPedido(3);
-        responseDto.setIdCliente(1);
-        responseDto.setIdRestautante(2);
-        responseDto.setEstado("Pendiente");
-        when(pedidoResponseMapper.toDto(any(Pedido.class))).thenReturn(responseDto);
+        responseDto.setIdPedido(pedido.getId());
+        responseDto.setIdCliente(requestDto.getIdCliente());
+        responseDto.setIdRestautante(requestDto.getIdRestaurante());
+        responseDto.setEstado(pedido.getEstado());
 
 
-        RealizarPedidoResponseDto response = pedidoHandler.registrar(request);
+        RealizarPedidoResponseDto result = pedidoHandler.registrar(requestDto);
 
-
-        assertEquals(3, response.getIdPedido());
-        assertEquals(1, response.getIdCliente());
-        assertEquals(2, response.getIdRestautante());
-        assertEquals("Pendiente", response.getEstado());
+        // Assert
+        assertEquals(responseDto, result);
     }
 
-}
 
+}
